@@ -14,9 +14,9 @@ export default function PenggunaClient({ profiles }: { profiles: Profile[] }) {
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-stone-200 bg-white shadow-sm">
+    <div className="overflow-x-auto rounded-lg border border-neutral-800 bg-neutral-900 shadow-sm">
       <table className="w-full text-sm">
-        <thead className="bg-stone-50 text-left text-stone-500">
+        <thead className="bg-neutral-950 text-left text-neutral-500">
           <tr>
             <th className="px-3 py-2">Nama</th>
             <th className="px-3 py-2">Role</th>
@@ -25,12 +25,12 @@ export default function PenggunaClient({ profiles }: { profiles: Profile[] }) {
         </thead>
         <tbody>
           {profiles.map((profile) => (
-            <tr key={profile.id} className="border-t border-stone-100">
-              <td className="px-3 py-2 font-medium text-stone-700">{profile.full_name}</td>
+            <tr key={profile.id} className="border-t border-neutral-800">
+              <td className="px-3 py-2 font-medium text-neutral-200">{profile.full_name}</td>
               <td className="px-3 py-2">
                 <span
                   className={`rounded-full px-2 py-0.5 text-xs ${
-                    profile.role === "admin" ? "bg-amber-100 text-amber-700" : "bg-stone-100 text-stone-600"
+                    profile.role === "admin" ? "bg-orange-500/10 text-orange-400" : "bg-neutral-800 text-neutral-400"
                   }`}
                 >
                   {profile.role}
@@ -39,7 +39,7 @@ export default function PenggunaClient({ profiles }: { profiles: Profile[] }) {
               <td className="px-3 py-2 text-right">
                 <button
                   onClick={() => changeRole(profile.id, profile.role === "admin" ? "kasir" : "admin")}
-                  className="text-amber-700 hover:underline"
+                  className="text-orange-400 hover:underline"
                 >
                   Jadikan {profile.role === "admin" ? "Kasir" : "Admin"}
                 </button>
@@ -48,7 +48,7 @@ export default function PenggunaClient({ profiles }: { profiles: Profile[] }) {
           ))}
           {profiles.length === 0 && (
             <tr>
-              <td colSpan={3} className="px-3 py-4 text-center text-stone-400">
+              <td colSpan={3} className="px-3 py-4 text-center text-neutral-500">
                 Belum ada pengguna.
               </td>
             </tr>

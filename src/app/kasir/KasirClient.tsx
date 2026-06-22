@@ -126,8 +126,10 @@ export default function KasirClient({
         <div className="mb-4 flex gap-2 overflow-x-auto">
           <button
             onClick={() => setActiveCategory("all")}
-            className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium ${
-              activeCategory === "all" ? "bg-amber-700 text-white" : "bg-white text-stone-600 border border-stone-300"
+            className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition ${
+              activeCategory === "all"
+                ? "bg-orange-500 text-black"
+                : "border border-neutral-700 bg-neutral-900 text-neutral-300 hover:border-orange-500/40"
             }`}
           >
             Semua
@@ -136,8 +138,10 @@ export default function KasirClient({
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium ${
-                activeCategory === cat.id ? "bg-amber-700 text-white" : "bg-white text-stone-600 border border-stone-300"
+              className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition ${
+                activeCategory === cat.id
+                  ? "bg-orange-500 text-black"
+                  : "border border-neutral-700 bg-neutral-900 text-neutral-300 hover:border-orange-500/40"
               }`}
             >
               {cat.name}
@@ -151,41 +155,41 @@ export default function KasirClient({
               key={product.id}
               onClick={() => addToCart(product)}
               disabled={product.stock <= 0}
-              className="flex flex-col items-start rounded-lg border border-stone-200 bg-white p-3 text-left shadow-sm transition hover:border-amber-400 disabled:opacity-40"
+              className="flex flex-col items-start rounded-lg border border-neutral-800 bg-neutral-900 p-3 text-left shadow-sm transition hover:border-orange-500/50 hover:shadow-orange-900/20 disabled:opacity-40"
             >
-              <span className="font-semibold text-stone-800">{product.name}</span>
-              <span className="text-sm text-amber-700">{formatRupiah(product.price)}</span>
-              <span className="mt-1 text-xs text-stone-400">Stok: {product.stock}</span>
+              <span className="font-semibold text-white">{product.name}</span>
+              <span className="text-sm text-orange-400">{formatRupiah(product.price)}</span>
+              <span className="mt-1 text-xs text-neutral-500">Stok: {product.stock}</span>
             </button>
           ))}
           {filteredProducts.length === 0 && (
-            <p className="col-span-full text-sm text-stone-500">Belum ada produk.</p>
+            <p className="col-span-full text-sm text-neutral-500">Belum ada produk.</p>
           )}
         </div>
       </div>
 
-      <div className="flex flex-col rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
-        <h2 className="mb-3 text-lg font-bold text-stone-800">Keranjang</h2>
+      <div className="flex flex-col rounded-lg border border-neutral-800 bg-neutral-900 p-4 shadow-sm">
+        <h2 className="mb-3 text-lg font-bold text-white">Keranjang</h2>
 
         <div className="flex-1 space-y-2 overflow-y-auto">
-          {cart.length === 0 && <p className="text-sm text-stone-400">Belum ada item.</p>}
+          {cart.length === 0 && <p className="text-sm text-neutral-500">Belum ada item.</p>}
           {cart.map((item) => (
             <div key={item.product.id} className="flex items-center justify-between gap-2 text-sm">
               <div className="flex-1">
-                <p className="font-medium text-stone-700">{item.product.name}</p>
-                <p className="text-stone-400">{formatRupiah(item.product.price)}</p>
+                <p className="font-medium text-neutral-200">{item.product.name}</p>
+                <p className="text-neutral-500">{formatRupiah(item.product.price)}</p>
               </div>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                  className="h-6 w-6 rounded bg-stone-100 text-stone-600"
+                  className="h-6 w-6 rounded bg-neutral-800 text-neutral-300 hover:bg-orange-500/20 hover:text-orange-400"
                 >
                   -
                 </button>
-                <span className="w-6 text-center">{item.quantity}</span>
+                <span className="w-6 text-center text-neutral-200">{item.quantity}</span>
                 <button
                   onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                  className="h-6 w-6 rounded bg-stone-100 text-stone-600"
+                  className="h-6 w-6 rounded bg-neutral-800 text-neutral-300 hover:bg-orange-500/20 hover:text-orange-400"
                 >
                   +
                 </button>
@@ -194,10 +198,10 @@ export default function KasirClient({
           ))}
         </div>
 
-        <div className="mt-4 space-y-3 border-t border-stone-200 pt-3">
-          <div className="flex justify-between text-base font-bold text-stone-800">
+        <div className="mt-4 space-y-3 border-t border-neutral-800 pt-3">
+          <div className="flex justify-between text-base font-bold text-white">
             <span>Total</span>
-            <span>{formatRupiah(total)}</span>
+            <span className="text-orange-400">{formatRupiah(total)}</span>
           </div>
 
           <div className="flex gap-2">
@@ -205,8 +209,10 @@ export default function KasirClient({
               <button
                 key={method}
                 onClick={() => setPaymentMethod(method)}
-                className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium uppercase ${
-                  paymentMethod === method ? "bg-amber-700 text-white" : "bg-stone-100 text-stone-600"
+                className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium uppercase transition ${
+                  paymentMethod === method
+                    ? "bg-orange-500 text-black"
+                    : "bg-neutral-800 text-neutral-400 hover:text-white"
                 }`}
               >
                 {method}
@@ -216,25 +222,25 @@ export default function KasirClient({
 
           {paymentMethod === "cash" && (
             <div>
-              <label className="text-xs font-medium text-stone-500">Uang diterima</label>
+              <label className="text-xs font-medium text-neutral-500">Uang diterima</label>
               <input
                 type="number"
                 min={0}
                 value={cashReceived}
                 onChange={(e) => setCashReceived(e.target.value)}
-                className="w-full rounded-md border border-stone-300 px-3 py-1.5 text-sm"
+                className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
               />
-              <p className="mt-1 text-xs text-stone-500">Kembalian: {formatRupiah(change)}</p>
+              <p className="mt-1 text-xs text-neutral-500">Kembalian: {formatRupiah(change)}</p>
             </div>
           )}
 
-          {error && <p className="rounded bg-red-50 px-2 py-1 text-xs text-red-600">{error}</p>}
-          {successMsg && <p className="rounded bg-green-50 px-2 py-1 text-xs text-green-600">{successMsg}</p>}
+          {error && <p className="rounded bg-red-500/10 px-2 py-1 text-xs text-red-400">{error}</p>}
+          {successMsg && <p className="rounded bg-green-500/10 px-2 py-1 text-xs text-green-400">{successMsg}</p>}
 
           <button
             onClick={handleCheckout}
             disabled={submitting || cart.length === 0}
-            className="w-full rounded-md bg-amber-700 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-800 disabled:opacity-50"
+            className="w-full rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-black transition hover:bg-orange-400 disabled:opacity-50"
           >
             {submitting ? "Memproses..." : "Bayar"}
           </button>

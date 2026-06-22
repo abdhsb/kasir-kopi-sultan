@@ -74,29 +74,29 @@ export default function ProdukClient({
 
   return (
     <div className="grid gap-4 lg:grid-cols-3">
-      <form onSubmit={handleSubmit} className="space-y-3 rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
-        <h2 className="text-lg font-bold text-stone-800">
+      <form onSubmit={handleSubmit} className="space-y-3 rounded-lg border border-neutral-800 bg-neutral-900 p-4 shadow-sm">
+        <h2 className="text-lg font-bold text-white">
           {form.id ? "Ubah Produk" : "Tambah Produk"}
         </h2>
 
-        {error && <p className="rounded bg-red-50 px-2 py-1 text-xs text-red-600">{error}</p>}
+        {error && <p className="rounded bg-red-500/10 px-2 py-1 text-xs text-red-400">{error}</p>}
 
         <div>
-          <label className="text-xs font-medium text-stone-500">Nama</label>
+          <label className="text-xs font-medium text-neutral-400">Nama</label>
           <input
             required
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="w-full rounded-md border border-stone-300 px-3 py-1.5 text-sm"
+            className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
 
         <div>
-          <label className="text-xs font-medium text-stone-500">Kategori</label>
+          <label className="text-xs font-medium text-neutral-400">Kategori</label>
           <select
             value={form.category_id}
             onChange={(e) => setForm({ ...form, category_id: e.target.value })}
-            className="w-full rounded-md border border-stone-300 px-3 py-1.5 text-sm"
+            className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           >
             <option value="">Tanpa kategori</option>
             {categories.map((cat) => (
@@ -108,26 +108,26 @@ export default function ProdukClient({
         </div>
 
         <div>
-          <label className="text-xs font-medium text-stone-500">Harga</label>
+          <label className="text-xs font-medium text-neutral-400">Harga</label>
           <input
             required
             type="number"
             min={0}
             value={form.price}
             onChange={(e) => setForm({ ...form, price: e.target.value })}
-            className="w-full rounded-md border border-stone-300 px-3 py-1.5 text-sm"
+            className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
 
         <div>
-          <label className="text-xs font-medium text-stone-500">Stok</label>
+          <label className="text-xs font-medium text-neutral-400">Stok</label>
           <input
             required
             type="number"
             min={0}
             value={form.stock}
             onChange={(e) => setForm({ ...form, stock: e.target.value })}
-            className="w-full rounded-md border border-stone-300 px-3 py-1.5 text-sm"
+            className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
 
@@ -135,7 +135,7 @@ export default function ProdukClient({
           <button
             type="submit"
             disabled={saving}
-            className="flex-1 rounded-md bg-amber-700 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-800 disabled:opacity-50"
+            className="flex-1 rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-black hover:bg-orange-400 disabled:opacity-50"
           >
             {saving ? "Menyimpan..." : form.id ? "Simpan" : "Tambah"}
           </button>
@@ -143,7 +143,7 @@ export default function ProdukClient({
             <button
               type="button"
               onClick={() => setForm(emptyForm)}
-              className="rounded-md border border-stone-300 px-4 py-2 text-sm"
+              className="rounded-md border border-neutral-700 px-4 py-2 text-sm text-neutral-300 hover:border-orange-500/40"
             >
               Batal
             </button>
@@ -152,9 +152,9 @@ export default function ProdukClient({
       </form>
 
       <div className="lg:col-span-2">
-        <div className="overflow-x-auto rounded-lg border border-stone-200 bg-white shadow-sm">
+        <div className="overflow-x-auto rounded-lg border border-neutral-800 bg-neutral-900 shadow-sm">
           <table className="w-full text-sm">
-            <thead className="bg-stone-50 text-left text-stone-500">
+            <thead className="bg-neutral-950 text-left text-neutral-500">
               <tr>
                 <th className="px-3 py-2">Nama</th>
                 <th className="px-3 py-2">Harga</th>
@@ -165,25 +165,25 @@ export default function ProdukClient({
             </thead>
             <tbody>
               {products.map((product) => (
-                <tr key={product.id} className="border-t border-stone-100">
-                  <td className="px-3 py-2 font-medium text-stone-700">{product.name}</td>
-                  <td className="px-3 py-2">{formatRupiah(product.price)}</td>
-                  <td className="px-3 py-2">{product.stock}</td>
+                <tr key={product.id} className="border-t border-neutral-800">
+                  <td className="px-3 py-2 font-medium text-neutral-200">{product.name}</td>
+                  <td className="px-3 py-2 text-neutral-300">{formatRupiah(product.price)}</td>
+                  <td className="px-3 py-2 text-neutral-300">{product.stock}</td>
                   <td className="px-3 py-2">
                     <button
                       onClick={() => toggleActive(product)}
                       className={`rounded-full px-2 py-0.5 text-xs ${
-                        product.is_active ? "bg-green-100 text-green-700" : "bg-stone-100 text-stone-500"
+                        product.is_active ? "bg-green-500/10 text-green-400" : "bg-neutral-800 text-neutral-500"
                       }`}
                     >
                       {product.is_active ? "Aktif" : "Nonaktif"}
                     </button>
                   </td>
                   <td className="px-3 py-2 text-right">
-                    <button onClick={() => startEdit(product)} className="mr-2 text-amber-700 hover:underline">
+                    <button onClick={() => startEdit(product)} className="mr-2 text-orange-400 hover:underline">
                       Ubah
                     </button>
-                    <button onClick={() => deleteProduct(product.id)} className="text-red-600 hover:underline">
+                    <button onClick={() => deleteProduct(product.id)} className="text-red-400 hover:underline">
                       Hapus
                     </button>
                   </td>
@@ -191,7 +191,7 @@ export default function ProdukClient({
               ))}
               {products.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-3 py-4 text-center text-stone-400">
+                  <td colSpan={5} className="px-3 py-4 text-center text-neutral-500">
                     Belum ada produk.
                   </td>
                 </tr>

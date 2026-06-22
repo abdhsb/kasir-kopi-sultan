@@ -33,18 +33,20 @@ export default function AppHeader({
   ];
 
   return (
-    <header className="flex items-center justify-between border-b border-stone-200 bg-white px-6 py-3">
+    <header className="flex items-center justify-between border-b border-orange-500/20 bg-neutral-950 px-6 py-3">
       <div className="flex items-center gap-6">
-        <span className="text-lg font-bold text-amber-800">Kopi Sultan</span>
-        <nav className="flex gap-4">
+        <span className="flex items-center gap-2 text-lg font-bold text-white">
+          <span className="text-orange-500">☕</span> Kopi <span className="text-orange-500">Sultan</span>
+        </span>
+        <nav className="flex gap-1">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`text-sm font-medium ${
+              className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
                 pathname.startsWith(link.href)
-                  ? "text-amber-700"
-                  : "text-stone-500 hover:text-stone-800"
+                  ? "bg-orange-500/10 text-orange-400"
+                  : "text-neutral-400 hover:bg-neutral-800 hover:text-white"
               }`}
             >
               {link.label}
@@ -53,12 +55,12 @@ export default function AppHeader({
         </nav>
       </div>
       <div className="flex items-center gap-4">
-        <span className="text-sm text-stone-600">
-          {fullName} <span className="text-stone-400">({role})</span>
+        <span className="text-sm text-neutral-400">
+          {fullName} <span className="text-orange-500">({role})</span>
         </span>
         <button
           onClick={handleLogout}
-          className="rounded-md border border-stone-300 px-3 py-1.5 text-sm text-stone-600 hover:bg-stone-100"
+          className="rounded-md border border-neutral-700 px-3 py-1.5 text-sm text-neutral-300 transition hover:border-orange-500/40 hover:text-orange-400"
         >
           Keluar
         </button>

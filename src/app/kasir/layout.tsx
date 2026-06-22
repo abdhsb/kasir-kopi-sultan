@@ -14,7 +14,7 @@ export default async function KasirLayout({ children }: { children: React.ReactN
     .single();
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-black">
       <AppHeader fullName={profile?.full_name ?? user.email ?? ""} role={profile?.role ?? "kasir"} />
       <main>{children}</main>
     </div>

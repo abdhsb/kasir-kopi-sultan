@@ -23,14 +23,14 @@ export default async function LaporanPage() {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
-        <p className="text-sm text-stone-500">Total penjualan hari ini</p>
-        <p className="text-2xl font-bold text-amber-800">{formatRupiah(totalToday)}</p>
+      <div className="rounded-lg border border-orange-500/20 bg-neutral-900 p-4 shadow-sm">
+        <p className="text-sm text-neutral-400">Total penjualan hari ini</p>
+        <p className="text-2xl font-bold text-orange-400">{formatRupiah(totalToday)}</p>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-stone-200 bg-white shadow-sm">
+      <div className="overflow-x-auto rounded-lg border border-neutral-800 bg-neutral-900 shadow-sm">
         <table className="w-full text-sm">
-          <thead className="bg-stone-50 text-left text-stone-500">
+          <thead className="bg-neutral-950 text-left text-neutral-500">
             <tr>
               <th className="px-3 py-2">Waktu</th>
               <th className="px-3 py-2">Kasir</th>
@@ -41,15 +41,15 @@ export default async function LaporanPage() {
           </thead>
           <tbody>
             {(transactions ?? []).map((tx) => (
-              <tr key={tx.id} className="border-t border-stone-100">
-                <td className="px-3 py-2">{formatDate(tx.created_at)}</td>
-                <td className="px-3 py-2">{tx.profiles?.full_name ?? "-"}</td>
-                <td className="px-3 py-2 uppercase">{tx.payment_method}</td>
-                <td className="px-3 py-2">{formatRupiah(Number(tx.total))}</td>
+              <tr key={tx.id} className="border-t border-neutral-800">
+                <td className="px-3 py-2 text-neutral-300">{formatDate(tx.created_at)}</td>
+                <td className="px-3 py-2 text-neutral-300">{tx.profiles?.full_name ?? "-"}</td>
+                <td className="px-3 py-2 uppercase text-neutral-300">{tx.payment_method}</td>
+                <td className="px-3 py-2 text-neutral-200">{formatRupiah(Number(tx.total))}</td>
                 <td className="px-3 py-2">
                   <span
                     className={`rounded-full px-2 py-0.5 text-xs ${
-                      tx.status === "paid" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                      tx.status === "paid" ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"
                     }`}
                   >
                     {tx.status}
@@ -59,7 +59,7 @@ export default async function LaporanPage() {
             ))}
             {(transactions ?? []).length === 0 && (
               <tr>
-                <td colSpan={5} className="px-3 py-4 text-center text-stone-400">
+                <td colSpan={5} className="px-3 py-4 text-center text-neutral-500">
                   Belum ada transaksi.
                 </td>
               </tr>

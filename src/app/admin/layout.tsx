@@ -16,7 +16,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (profile?.role !== "admin") redirect("/kasir");
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-black">
       <AppHeader fullName={profile.full_name} role="admin" />
       <main className="p-4">{children}</main>
     </div>

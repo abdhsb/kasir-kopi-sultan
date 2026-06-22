@@ -30,46 +30,52 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-stone-100">
+    <div className="flex min-h-screen items-center justify-center bg-black px-4">
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(249,115,22,0.15),_transparent_60%)]" />
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm space-y-4 rounded-xl bg-white p-8 shadow-md"
+        className="w-full max-w-sm space-y-5 rounded-2xl border border-orange-500/20 bg-neutral-900 p-8 shadow-2xl shadow-orange-900/20"
       >
-        <h1 className="text-center text-2xl font-bold text-stone-800">
-          Kasir Kopi Sultan
-        </h1>
-        <p className="text-center text-sm text-stone-500">Masuk untuk melanjutkan</p>
+        <div className="text-center">
+          <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-orange-500/10 text-2xl">
+            ☕
+          </span>
+          <h1 className="mt-3 text-2xl font-bold text-white">
+            Kopi <span className="text-orange-500">Sultan</span>
+          </h1>
+          <p className="mt-1 text-sm text-neutral-400">Masuk untuk melanjutkan</p>
+        </div>
 
         {error && (
-          <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
+          <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-400">{error}</p>
         )}
 
         <div className="space-y-1">
-          <label className="text-sm font-medium text-stone-700">Email</label>
+          <label className="text-sm font-medium text-neutral-300">Email</label>
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-md border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-white placeholder-neutral-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
 
         <div className="space-y-1">
-          <label className="text-sm font-medium text-stone-700">Password</label>
+          <label className="text-sm font-medium text-neutral-300">Password</label>
           <input
             type="password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-md border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-white placeholder-neutral-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-md bg-amber-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-800 disabled:opacity-50"
+          className="w-full rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-black transition hover:bg-orange-400 disabled:opacity-50"
         >
           {loading ? "Memproses..." : "Masuk"}
         </button>
