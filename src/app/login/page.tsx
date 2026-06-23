@@ -39,8 +39,8 @@ export default function LoginPage() {
         className="w-full max-w-sm space-y-5 rounded-2xl border border-orange-500/20 bg-neutral-900 p-8 shadow-2xl shadow-orange-900/20"
       >
         <div className="text-center">
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-orange-500/10">
-            <Image src="/logo.png" alt="Logo Sultan Coffee" width={40} height={40} className="object-contain" />
+          <span className="inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-full ring-2 ring-orange-500/30">
+            <Image src="/logo.png" alt="Logo Sultan Coffee" width={64} height={64} className="h-full w-full object-cover" />
           </span>
           <h1 className="mt-3 text-2xl font-bold text-white">
             Kopi <span className="text-orange-500">Sultan</span>

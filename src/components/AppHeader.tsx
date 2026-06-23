@@ -37,7 +37,13 @@ export default function AppHeader({
     <header className="flex items-center justify-between border-b border-orange-500/20 bg-neutral-950 px-6 py-3">
       <div className="flex items-center gap-6">
         <span className="flex items-center gap-2 text-lg font-bold text-white">
-          <Image src="/logo.png" alt="Logo Sultan Coffee" width={32} height={32} className="object-contain" />
+          <Image
+            src="/logo.png"
+            alt="Logo Sultan Coffee"
+            width={32}
+            height={32}
+            className="h-8 w-8 rounded-full object-cover"
+          />
           Kopi <span className="text-orange-500">Sultan</span>
         </span>
         <nav className="flex gap-1">
