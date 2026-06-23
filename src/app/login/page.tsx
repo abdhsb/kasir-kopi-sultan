@@ -32,8 +32,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-black px-4">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black px-4">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(249,115,22,0.15),_transparent_60%)]" />
+      <Image
+        src="/logo.png"
+        alt=""
+        width={600}
+        height={600}
+        className="pointer-events-none fixed left-1/2 top-1/2 -z-10 h-[60vh] w-[60vh] -translate-x-1/2 -translate-y-1/2 object-contain opacity-5"
+      />
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-sm space-y-5 rounded-2xl border border-orange-500/20 bg-neutral-900 p-8 shadow-2xl shadow-orange-900/20"
