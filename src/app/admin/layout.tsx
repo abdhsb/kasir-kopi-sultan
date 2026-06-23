@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import AppHeader from "@/components/AppHeader";
 
@@ -16,7 +17,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (profile?.role !== "admin") redirect("/kasir");
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="relative min-h-screen overflow-hidden bg-black">
+      <Image
+        src="/logo.png"
+        alt=""
+        width={600}
+        height={600}
+        className="pointer-events-none fixed left-1/2 top-1/2 -z-10 h-[60vh] w-[60vh] -translate-x-1/2 -translate-y-1/2 object-contain opacity-5"
+      />
       <AppHeader fullName={profile.full_name} role="admin" />
       <main className="p-4">{children}</main>
     </div>
