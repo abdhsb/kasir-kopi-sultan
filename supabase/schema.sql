@@ -34,6 +34,8 @@ create type payment_method as enum ('cash', 'qris', 'debit');
 create table transactions (
   id uuid primary key default gen_random_uuid(),
   cashier_id uuid not null references profiles (id),
+  subtotal numeric(12, 2) not null default 0 check (subtotal >= 0),
+  discount numeric(12, 2) not null default 0 check (discount >= 0),
   total numeric(12, 2) not null check (total >= 0),
   payment_method payment_method not null default 'cash',
   cash_received numeric(12, 2),
@@ -129,3 +131,17 @@ $$;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure handle_new_user ();
+
+-- Storage bucket untuk foto produk
+insert into storage.buckets (id, name, public)
+values ('products', 'products', true)
+on conflict (id) do nothing;
+
+create policy "products_images_public_read" on storage.objects
+  for select using (bucket_id = 'products');
+create policy "products_images_admin_write" on storage.objects
+  for insert with check (bucket_id = 'products' and is_admin (auth.uid()));
+create policy "products_images_admin_update" on storage.objects
+  for update using (bucket_id = 'products' and is_admin (auth.uid()));
+create policy "products_images_admin_delete" on storage.objects
+  for delete using (bucket_id = 'products' and is_admin (auth.uid()));

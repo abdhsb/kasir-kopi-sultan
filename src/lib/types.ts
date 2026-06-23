@@ -30,6 +30,8 @@ export type TransactionStatus = "paid" | "cancelled";
 export interface Transaction {
   id: string;
   cashier_id: string;
+  subtotal: number;
+  discount: number;
   total: number;
   payment_method: PaymentMethod;
   cash_received: number | null;

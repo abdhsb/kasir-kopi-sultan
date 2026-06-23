@@ -9,7 +9,7 @@ function formatRupiah(value: number) {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
 }
 
-const emptyForm = { id: "", name: "", price: "", stock: "", category_id: "" };
+const emptyForm = { id: "", name: "", price: "", stock: "", category_id: "", image_url: "" };
 
 export default function ProdukClient({
   products,
@@ -23,6 +23,7 @@ export default function ProdukClient({
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   function startEdit(product: Product) {
     setForm({
@@ -31,7 +32,28 @@ export default function ProdukClient({
       price: String(product.price),
       stock: String(product.stock),
       category_id: product.category_id ?? "",
+      image_url: product.image_url ?? "",
     });
+  }
+
+  async function handleImageUpload(file: File) {
+    setUploading(true);
+    setError(null);
+
+    const ext = file.name.split(".").pop();
+    const path = `${crypto.randomUUID()}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage.from("products").upload(path, file);
+
+    if (uploadError) {
+      setError(uploadError.message);
+      setUploading(false);
+      return;
+    }
+
+    const { data } = supabase.storage.from("products").getPublicUrl(path);
+    setForm((prev) => ({ ...prev, image_url: data.publicUrl }));
+    setUploading(false);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -44,6 +66,7 @@ export default function ProdukClient({
       price: Number(form.price),
       stock: Number(form.stock),
       category_id: form.category_id || null,
+      image_url: form.image_url || null,
     };
 
     const result = form.id
@@ -120,6 +143,24 @@ export default function ProdukClient({
         </div>
 
         <div>
+          <label className="text-xs font-medium text-neutral-400">Foto Produk</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleImageUpload(file);
+            }}
+            className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-xs text-neutral-300 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+          />
+          {uploading && <p className="mt-1 text-xs text-neutral-500">Mengunggah...</p>}
+          {form.image_url && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={form.image_url} alt="Pratinjau" className="mt-2 h-20 w-20 rounded-md object-cover" />
+          )}
+        </div>
+
+        <div>
           <label className="text-xs font-medium text-neutral-400">Stok</label>
           <input
             required
@@ -156,6 +197,7 @@ export default function ProdukClient({
           <table className="w-full text-sm">
             <thead className="bg-neutral-950 text-left text-neutral-500">
               <tr>
+                <th className="px-3 py-2">Foto</th>
                 <th className="px-3 py-2">Nama</th>
                 <th className="px-3 py-2">Harga</th>
                 <th className="px-3 py-2">Stok</th>
@@ -166,6 +208,16 @@ export default function ProdukClient({
             <tbody>
               {products.map((product) => (
                 <tr key={product.id} className="border-t border-neutral-800">
+                  <td className="px-3 py-2">
+                    {product.image_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={product.image_url} alt={product.name} className="h-10 w-10 rounded-md object-cover" />
+                    ) : (
+                      <span className="flex h-10 w-10 items-center justify-center rounded-md bg-neutral-800 text-xs text-neutral-500">
+                        -
+                      </span>
+                    )}
+                  </td>
                   <td className="px-3 py-2 font-medium text-neutral-200">{product.name}</td>
                   <td className="px-3 py-2 text-neutral-300">{formatRupiah(product.price)}</td>
                   <td className="px-3 py-2 text-neutral-300">{product.stock}</td>
@@ -191,7 +243,7 @@ export default function ProdukClient({
               ))}
               {products.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-3 py-4 text-center text-neutral-500">
+                  <td colSpan={6} className="px-3 py-4 text-center text-neutral-500">
                     Belum ada produk.
                   </td>
                 </tr>

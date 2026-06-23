@@ -4,6 +4,9 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { CartItem, Category, PaymentMethod, Product } from "@/lib/types";
+import Receipt, { type ReceiptData } from "@/components/Receipt";
+
+type DiscountType = "percent" | "nominal";
 
 function formatRupiah(value: number) {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
@@ -23,19 +26,31 @@ export default function KasirClient({
   const [cart, setCart] = useState<CartItem[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [cashReceived, setCashReceived] = useState<string>("");
+  const [discountType, setDiscountType] = useState<DiscountType>("nominal");
+  const [discountValue, setDiscountValue] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [receipt, setReceipt] = useState<ReceiptData | null>(null);
 
   const filteredProducts = useMemo(() => {
     if (activeCategory === "all") return products;
     return products.filter((p) => p.category_id === activeCategory);
   }, [products, activeCategory]);
 
-  const total = useMemo(
+  const subtotal = useMemo(
     () => cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
     [cart]
   );
+
+  const discount = useMemo(() => {
+    const value = Number(discountValue || 0);
+    if (value <= 0) return 0;
+    const raw = discountType === "percent" ? (subtotal * value) / 100 : value;
+    return Math.min(subtotal, raw);
+  }, [discountType, discountValue, subtotal]);
+
+  const total = Math.max(0, subtotal - discount);
 
   const change = paymentMethod === "cash" ? Math.max(0, Number(cashReceived || 0) - total) : 0;
 
@@ -72,10 +87,14 @@ export default function KasirClient({
       return;
     }
 
+    const { data: profile } = await supabase.from("profiles").select("full_name").eq("id", user.id).single();
+
     const { data: transaction, error: txError } = await supabase
       .from("transactions")
       .insert({
         cashier_id: user.id,
+        subtotal,
+        discount,
         total,
         payment_method: paymentMethod,
         cash_received: paymentMethod === "cash" ? Number(cashReceived || 0) : null,
@@ -113,9 +132,26 @@ export default function KasirClient({
         .eq("id", item.product.id);
     }
 
+    setReceipt({
+      id: transaction.id,
+      createdAt: transaction.created_at,
+      cashierName: profile?.full_name ?? "-",
+      items: cart.map((item) => ({
+        product_name: item.product.name,
+        price: item.product.price,
+        quantity: item.quantity,
+        subtotal: item.product.price * item.quantity,
+      })),
+      subtotal,
+      discount,
+      total,
+      paymentMethod,
+      cashReceived: paymentMethod === "cash" ? Number(cashReceived || 0) : null,
+    });
     setSuccessMsg(`Transaksi berhasil. Total ${formatRupiah(total)}`);
     setCart([]);
     setCashReceived("");
+    setDiscountValue("");
     setSubmitting(false);
     router.refresh();
   }
@@ -157,6 +193,14 @@ export default function KasirClient({
               disabled={product.stock <= 0}
               className="flex flex-col items-start rounded-lg border border-neutral-800 bg-neutral-900 p-3 text-left shadow-sm transition hover:border-orange-500/50 hover:shadow-orange-900/20 disabled:opacity-40"
             >
+              {product.image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={product.image_url} alt={product.name} className="mb-2 h-20 w-full rounded-md object-cover" />
+              ) : (
+                <span className="mb-2 flex h-20 w-full items-center justify-center rounded-md bg-neutral-800 text-2xl">
+                  ☕
+                </span>
+              )}
               <span className="font-semibold text-white">{product.name}</span>
               <span className="text-sm text-orange-400">{formatRupiah(product.price)}</span>
               <span className="mt-1 text-xs text-neutral-500">Stok: {product.stock}</span>
@@ -199,6 +243,34 @@ export default function KasirClient({
         </div>
 
         <div className="mt-4 space-y-3 border-t border-neutral-800 pt-3">
+          <div className="flex justify-between text-sm text-neutral-300">
+            <span>Subtotal</span>
+            <span>{formatRupiah(subtotal)}</span>
+          </div>
+
+          <div>
+            <label className="text-xs font-medium text-neutral-500">Diskon</label>
+            <div className="flex gap-2">
+              <select
+                value={discountType}
+                onChange={(e) => setDiscountType(e.target.value as DiscountType)}
+                className="rounded-md border border-neutral-700 bg-neutral-800 px-2 py-1.5 text-xs text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+              >
+                <option value="nominal">Rp</option>
+                <option value="percent">%</option>
+              </select>
+              <input
+                type="number"
+                min={0}
+                value={discountValue}
+                onChange={(e) => setDiscountValue(e.target.value)}
+                placeholder="0"
+                className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+              />
+            </div>
+            {discount > 0 && <p className="mt-1 text-xs text-orange-400">Potongan: {formatRupiah(discount)}</p>}
+          </div>
+
           <div className="flex justify-between text-base font-bold text-white">
             <span>Total</span>
             <span className="text-orange-400">{formatRupiah(total)}</span>
@@ -246,6 +318,8 @@ export default function KasirClient({
           </button>
         </div>
       </div>
+
+      {receipt && <Receipt data={receipt} onClose={() => setReceipt(null)} />}
     </div>
   );
 }
