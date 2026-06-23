@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import ReceiptDetailClient from "./ReceiptDetailClient";
+import VoidTransactionButton from "./VoidTransactionButton";
 
 function formatRupiah(value: number) {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
@@ -29,19 +30,26 @@ export default async function LaporanDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="space-y-4">
-      <ReceiptDetailClient
-        data={{
-          id: transaction.id,
-          createdAt: transaction.created_at,
-          cashierName: transaction.profiles?.full_name ?? "-",
-          items: items ?? [],
-          subtotal: Number(transaction.subtotal),
-          discount: Number(transaction.discount),
-          total: Number(transaction.total),
-          paymentMethod: transaction.payment_method,
-          cashReceived: transaction.cash_received != null ? Number(transaction.cash_received) : null,
-        }}
-      />
+      <div className="flex flex-wrap items-center gap-3">
+        <ReceiptDetailClient
+          data={{
+            id: transaction.id,
+            createdAt: transaction.created_at,
+            cashierName: transaction.profiles?.full_name ?? "-",
+            items: items ?? [],
+            subtotal: Number(transaction.subtotal),
+            discount: Number(transaction.discount),
+            total: Number(transaction.total),
+            paymentMethod: transaction.payment_method,
+            cashReceived: transaction.cash_received != null ? Number(transaction.cash_received) : null,
+          }}
+        />
+        <VoidTransactionButton
+          transactionId={transaction.id}
+          items={(items ?? []).map((item) => ({ product_id: item.product_id, quantity: item.quantity }))}
+          status={transaction.status}
+        />
+      </div>
 
       <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-4 shadow-sm">
         <p className="text-sm text-neutral-400">Waktu</p>

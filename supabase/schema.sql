@@ -96,6 +96,8 @@ create policy "transactions_select_own_or_admin" on transactions
   for select using (cashier_id = auth.uid() or is_admin (auth.uid()));
 create policy "transactions_insert_self" on transactions
   for insert with check (cashier_id = auth.uid());
+create policy "transactions_update_admin" on transactions
+  for update using (is_admin (auth.uid()));
 
 create policy "transaction_items_select_via_transaction" on transaction_items
   for select using (
