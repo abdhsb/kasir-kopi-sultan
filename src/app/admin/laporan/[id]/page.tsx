@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import ReceiptDetailClient from "./ReceiptDetailClient";
 import VoidTransactionButton from "./VoidTransactionButton";
+import DeleteTransactionButton from "@/components/DeleteTransactionButton";
 
 function formatRupiah(value: number) {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
@@ -49,6 +50,7 @@ export default async function LaporanDetailPage({ params }: { params: Promise<{ 
           items={(items ?? []).map((item) => ({ product_id: item.product_id, quantity: item.quantity }))}
           status={transaction.status}
         />
+        <DeleteTransactionButton transactionId={transaction.id} redirectTo="/admin/laporan" />
       </div>
 
       <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-4 shadow-sm">
