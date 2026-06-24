@@ -37,7 +37,9 @@ body {
     visibility: hidden;
   }
   #receipt-print-area,
-  #receipt-print-area * {
+  #receipt-print-area *,
+  #laporan-print-area,
+  #laporan-print-area * {
     visibility: visible;
   }
   #receipt-print-area {
@@ -46,4 +48,21 @@ body {
     top: 0;
     width: 100%;
   }
+  #laporan-print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: #fff;
+    color: #000;
+  }
+  #laporan-print-area * {
+    color: #000 !important;
+    background: #fff !important;
+    border-color: #ccc !important;
+  }
+  .print-hidden {
+    display: none !important;
+  }
 }
+

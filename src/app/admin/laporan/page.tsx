@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { PERIOD_LABELS, parsePeriod, periodStart, type Period } from "@/lib/period";
 import DeleteTransactionButton from "@/components/DeleteTransactionButton";
+import PrintReportButton from "./PrintReportButton";
 
 function formatRupiah(value: number) {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
@@ -47,7 +48,7 @@ export default async function LaporanPage({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
+      <div className="print-hidden flex flex-wrap gap-2">
         {periods.map((p) => (
           <Link
             key={p}
@@ -63,12 +64,7 @@ export default async function LaporanPage({
         ))}
       </div>
 
-      <div className="rounded-lg border border-orange-500/20 bg-neutral-900 p-4 shadow-sm">
-        <p className="text-sm text-neutral-400">Total penjualan - {PERIOD_LABELS[period]}</p>
-        <p className="text-2xl font-bold text-orange-400">{formatRupiah(totalPeriode)}</p>
-      </div>
-
-      <div className="flex items-center gap-2">
+      <div className="print-hidden flex items-center gap-2">
         <label className="text-xs font-medium text-neutral-400">Filter kasir</label>
         <form method="GET" className="flex gap-2">
           <input type="hidden" name="periode" value={period} />
@@ -91,56 +87,73 @@ export default async function LaporanPage({
             Terapkan
           </button>
         </form>
+        <PrintReportButton />
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-neutral-800 bg-neutral-900 shadow-sm">
-        <table className="w-full text-sm">
-          <thead className="bg-neutral-950 text-left text-neutral-500">
-            <tr>
-              <th className="px-3 py-2">Waktu</th>
-              <th className="px-3 py-2">Kasir</th>
-              <th className="px-3 py-2">Metode</th>
-              <th className="px-3 py-2">Total</th>
-              <th className="px-3 py-2">Status</th>
-              <th className="px-3 py-2"></th>
-              <th className="px-3 py-2"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {(transactions ?? []).map((tx) => (
-              <tr key={tx.id} className="border-t border-neutral-800">
-                <td className="px-3 py-2 text-neutral-300">{formatDate(tx.created_at)}</td>
-                <td className="px-3 py-2 text-neutral-300">{tx.profiles?.full_name ?? "-"}</td>
-                <td className="px-3 py-2 uppercase text-neutral-300">{tx.payment_method}</td>
-                <td className="px-3 py-2 text-neutral-200">{formatRupiah(Number(tx.total))}</td>
-                <td className="px-3 py-2">
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-xs ${
-                      tx.status === "paid" ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"
-                    }`}
-                  >
-                    {tx.status}
-                  </span>
-                </td>
-                <td className="px-3 py-2 text-right">
-                  <Link href={`/admin/laporan/${tx.id}`} className="text-orange-400 hover:underline">
-                    Detail
-                  </Link>
-                </td>
-                <td className="px-3 py-2 text-right">
-                  <DeleteTransactionButton transactionId={tx.id} />
-                </td>
-              </tr>
-            ))}
-            {(transactions ?? []).length === 0 && (
+      <div id="laporan-print-area" className="space-y-4">
+        <div className="hidden print:block">
+          <h1 className="text-lg font-bold">Laporan Penjualan Kopi Sultan</h1>
+          <p className="text-sm">
+            Periode: {PERIOD_LABELS[period]}
+            {kasir ? ` - ${kasirList?.find((p) => p.id === kasir)?.full_name ?? ""}` : ""}
+          </p>
+          <p className="text-xs">Dicetak: {formatDate(new Date().toISOString())}</p>
+        </div>
+
+        <div className="rounded-lg border border-orange-500/20 bg-neutral-900 p-4 shadow-sm">
+          <p className="text-sm text-neutral-400">Total penjualan - {PERIOD_LABELS[period]}</p>
+          <p className="text-2xl font-bold text-orange-400">{formatRupiah(totalPeriode)}</p>
+        </div>
+
+        <div className="overflow-x-auto rounded-lg border border-neutral-800 bg-neutral-900 shadow-sm">
+          <table className="w-full text-sm">
+            <thead className="bg-neutral-950 text-left text-neutral-500">
               <tr>
-                <td colSpan={7} className="px-3 py-4 text-center text-neutral-500">
-                  Belum ada transaksi.
-                </td>
+                <th className="px-3 py-2">Waktu</th>
+                <th className="px-3 py-2">Kasir</th>
+                <th className="px-3 py-2">Metode</th>
+                <th className="px-3 py-2">Total</th>
+                <th className="px-3 py-2">Status</th>
+                <th className="print-hidden px-3 py-2"></th>
+                <th className="print-hidden px-3 py-2"></th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {(transactions ?? []).map((tx) => (
+                <tr key={tx.id} className="border-t border-neutral-800">
+                  <td className="px-3 py-2 text-neutral-300">{formatDate(tx.created_at)}</td>
+                  <td className="px-3 py-2 text-neutral-300">{tx.profiles?.full_name ?? "-"}</td>
+                  <td className="px-3 py-2 uppercase text-neutral-300">{tx.payment_method}</td>
+                  <td className="px-3 py-2 text-neutral-200">{formatRupiah(Number(tx.total))}</td>
+                  <td className="px-3 py-2">
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs ${
+                        tx.status === "paid" ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"
+                      }`}
+                    >
+                      {tx.status}
+                    </span>
+                  </td>
+                  <td className="print-hidden px-3 py-2 text-right">
+                    <Link href={`/admin/laporan/${tx.id}`} className="text-orange-400 hover:underline">
+                      Detail
+                    </Link>
+                  </td>
+                  <td className="print-hidden px-3 py-2 text-right">
+                    <DeleteTransactionButton transactionId={tx.id} />
+                  </td>
+                </tr>
+              ))}
+              {(transactions ?? []).length === 0 && (
+                <tr>
+                  <td colSpan={7} className="px-3 py-4 text-center text-neutral-500">
+                    Belum ada transaksi.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
