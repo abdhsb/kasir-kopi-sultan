@@ -21,10 +21,20 @@ export default function DeleteTransactionButton({
     setLoading(true);
     setError(null);
 
-    const { error: deleteError } = await supabase.from("transactions").delete().eq("id", transactionId);
+    const { data, error: deleteError } = await supabase
+      .from("transactions")
+      .delete()
+      .eq("id", transactionId)
+      .select();
 
     if (deleteError) {
       setError(deleteError.message);
+      setLoading(false);
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      setError("Tidak ada izin untuk menghapus transaksi ini. Pastikan migration RLS sudah dijalankan di Supabase.");
       setLoading(false);
       return;
     }
@@ -33,6 +43,7 @@ export default function DeleteTransactionButton({
       router.replace(redirectTo);
     }
     router.refresh();
+    setLoading(false);
   }
 
   return (
