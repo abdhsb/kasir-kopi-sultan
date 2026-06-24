@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { PERIOD_LABELS, parsePeriod, periodStart, type Period } from "@/lib/period";
 
 function formatRupiah(value: number) {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
@@ -12,9 +13,10 @@ function formatDate(value: string) {
 export default async function LaporanPage({
   searchParams,
 }: {
-  searchParams: Promise<{ kasir?: string }>;
+  searchParams: Promise<{ kasir?: string; periode?: string }>;
 }) {
-  const { kasir } = await searchParams;
+  const { kasir, periode } = await searchParams;
+  const period = parsePeriod(periode);
   const supabase = await createClient();
 
   const { data: kasirList } = await supabase.from("profiles").select("id, full_name").order("full_name");
@@ -23,28 +25,52 @@ export default async function LaporanPage({
     .from("transactions")
     .select("*, profiles(full_name)")
     .order("created_at", { ascending: false })
-    .limit(200);
+    .limit(500);
 
   if (kasir) {
     query = query.eq("cashier_id", kasir);
   }
 
+  const start = periodStart(period);
+  if (start) {
+    query = query.gte("created_at", start.toISOString());
+  }
+
   const { data: transactions } = await query;
 
-  const totalToday = (transactions ?? [])
-    .filter((tx) => new Date(tx.created_at).toDateString() === new Date().toDateString())
+  const totalPeriode = (transactions ?? [])
+    .filter((tx) => tx.status === "paid")
     .reduce((sum, tx) => sum + Number(tx.total), 0);
+
+  const periods: Period[] = ["harian", "mingguan", "bulanan", "tahunan", "semua"];
 
   return (
     <div className="space-y-4">
+      <div className="flex flex-wrap gap-2">
+        {periods.map((p) => (
+          <Link
+            key={p}
+            href={`/admin/laporan?periode=${p}${kasir ? `&kasir=${kasir}` : ""}`}
+            className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition ${
+              period === p
+                ? "bg-orange-500 text-black"
+                : "border border-neutral-700 bg-neutral-900 text-neutral-300 hover:border-orange-500/40"
+            }`}
+          >
+            {PERIOD_LABELS[p]}
+          </Link>
+        ))}
+      </div>
+
       <div className="rounded-lg border border-orange-500/20 bg-neutral-900 p-4 shadow-sm">
-        <p className="text-sm text-neutral-400">Total penjualan hari ini</p>
-        <p className="text-2xl font-bold text-orange-400">{formatRupiah(totalToday)}</p>
+        <p className="text-sm text-neutral-400">Total penjualan - {PERIOD_LABELS[period]}</p>
+        <p className="text-2xl font-bold text-orange-400">{formatRupiah(totalPeriode)}</p>
       </div>
 
       <div className="flex items-center gap-2">
         <label className="text-xs font-medium text-neutral-400">Filter kasir</label>
         <form method="GET" className="flex gap-2">
+          <input type="hidden" name="periode" value={period} />
           <select
             name="kasir"
             defaultValue={kasir ?? ""}
