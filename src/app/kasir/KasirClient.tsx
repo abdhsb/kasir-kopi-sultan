@@ -186,26 +186,38 @@ export default function KasirClient({
         </div>
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
-          {filteredProducts.map((product) => (
-            <button
-              key={product.id}
-              onClick={() => addToCart(product)}
-              disabled={product.stock <= 0}
-              className="flex flex-col items-start rounded-lg border border-neutral-800 bg-neutral-900 p-3 text-left shadow-sm transition hover:border-orange-500/50 hover:shadow-orange-900/20 disabled:opacity-40"
-            >
-              {product.image_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={product.image_url} alt={product.name} className="mb-2 h-20 w-full rounded-md object-cover" />
-              ) : (
-                <span className="mb-2 flex h-20 w-full items-center justify-center rounded-md bg-neutral-800 text-2xl">
-                  ☕
-                </span>
-              )}
-              <span className="font-semibold text-white">{product.name}</span>
-              <span className="text-sm text-orange-400">{formatRupiah(product.price)}</span>
-              <span className="mt-1 text-xs text-neutral-500">Stok: {product.stock}</span>
-            </button>
-          ))}
+          {filteredProducts.map((product) => {
+            const cartItem = cart.find((item) => item.product.id === product.id);
+            return (
+              <button
+                key={product.id}
+                onClick={() => addToCart(product)}
+                disabled={product.stock <= 0}
+                className={`relative flex flex-col items-start rounded-lg border p-3 text-left shadow-sm transition disabled:opacity-40 ${
+                  cartItem
+                    ? "border-orange-500 bg-orange-500/10 shadow-orange-900/30 ring-1 ring-orange-500"
+                    : "border-neutral-800 bg-neutral-900 hover:border-orange-500/50 hover:shadow-orange-900/20"
+                }`}
+              >
+                {cartItem && (
+                  <span className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-orange-500 text-xs font-bold text-black">
+                    {cartItem.quantity}
+                  </span>
+                )}
+                {product.image_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={product.image_url} alt={product.name} className="mb-2 h-20 w-full rounded-md object-cover" />
+                ) : (
+                  <span className="mb-2 flex h-20 w-full items-center justify-center rounded-md bg-neutral-800 text-2xl">
+                    ☕
+                  </span>
+                )}
+                <span className="font-semibold text-white">{product.name}</span>
+                <span className="text-sm text-orange-400">{formatRupiah(product.price)}</span>
+                <span className="mt-1 text-xs text-neutral-500">Stok: {product.stock}</span>
+              </button>
+            );
+          })}
           {filteredProducts.length === 0 && (
             <p className="col-span-full text-sm text-neutral-500">Belum ada produk.</p>
           )}
