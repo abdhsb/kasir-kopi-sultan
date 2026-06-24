@@ -100,6 +100,8 @@ create policy "transactions_update_admin" on transactions
   for update using (is_admin (auth.uid()));
 create policy "transactions_delete_admin" on transactions
   for delete using (is_admin (auth.uid()));
+create policy "transactions_delete_own" on transactions
+  for delete using (cashier_id = auth.uid());
 
 create policy "transaction_items_select_via_transaction" on transaction_items
   for select using (

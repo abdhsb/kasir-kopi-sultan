@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Receipt, { type ReceiptData } from "@/components/Receipt";
+import DeleteTransactionButton from "@/components/DeleteTransactionButton";
 
 export default function RiwayatDetailClient({ data }: { data: ReceiptData }) {
   const [showReceipt, setShowReceipt] = useState(false);
@@ -18,6 +19,7 @@ export default function RiwayatDetailClient({ data }: { data: ReceiptData }) {
       >
         Lihat / Cetak Struk
       </button>
+      <DeleteTransactionButton transactionId={data.id} redirectTo="/kasir/riwayat" />
 
       {showReceipt && <Receipt data={data} onClose={() => setShowReceipt(false)} />}
     </div>

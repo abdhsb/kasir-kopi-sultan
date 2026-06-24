@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PERIOD_LABELS, parsePeriod, periodStart, type Period } from "@/lib/period";
+import DeleteTransactionButton from "@/components/DeleteTransactionButton";
 
 function formatRupiah(value: number) {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
@@ -74,6 +75,7 @@ export default async function RiwayatPage({
               <th className="px-3 py-2">Total</th>
               <th className="px-3 py-2">Status</th>
               <th className="px-3 py-2"></th>
+              <th className="px-3 py-2"></th>
             </tr>
           </thead>
           <tbody>
@@ -96,11 +98,14 @@ export default async function RiwayatPage({
                     Detail
                   </Link>
                 </td>
+                <td className="px-3 py-2 text-right">
+                  <DeleteTransactionButton transactionId={tx.id} />
+                </td>
               </tr>
             ))}
             {(transactions ?? []).length === 0 && (
               <tr>
-                <td colSpan={5} className="px-3 py-4 text-center text-neutral-500">
+                <td colSpan={6} className="px-3 py-4 text-center text-neutral-500">
                   Belum ada transaksi.
                 </td>
               </tr>
