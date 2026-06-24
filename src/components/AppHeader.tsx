@@ -24,6 +24,7 @@ export default function AppHeader({
 
   const links = [
     { href: "/kasir", label: "Kasir" },
+    { href: "/kasir/riwayat", label: "Riwayat" },
     ...(role === "admin"
       ? [
           { href: "/admin/produk", label: "Produk" },
