@@ -6,8 +6,6 @@ import { createClient } from "@/lib/supabase/client";
 import type { CartItem, Category, PaymentMethod, Product } from "@/lib/types";
 import Receipt, { type ReceiptData } from "@/components/Receipt";
 
-type DiscountType = "percent" | "nominal";
-
 function formatRupiah(value: number) {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
 }
@@ -26,8 +24,6 @@ export default function KasirClient({
   const [cart, setCart] = useState<CartItem[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [cashReceived, setCashReceived] = useState<string>("");
-  const [discountType, setDiscountType] = useState<DiscountType>("nominal");
-  const [discountValue, setDiscountValue] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -43,14 +39,9 @@ export default function KasirClient({
     [cart]
   );
 
-  const discount = useMemo(() => {
-    const value = Number(discountValue || 0);
-    if (value <= 0) return 0;
-    const raw = discountType === "percent" ? (subtotal * value) / 100 : value;
-    return Math.min(subtotal, raw);
-  }, [discountType, discountValue, subtotal]);
+  const discount = 0;
 
-  const total = Math.max(0, subtotal - discount);
+  const total = subtotal;
 
   const change = paymentMethod === "cash" ? Math.max(0, Number(cashReceived || 0) - total) : 0;
 
@@ -151,7 +142,6 @@ export default function KasirClient({
     setSuccessMsg(`Transaksi berhasil. Total ${formatRupiah(total)}`);
     setCart([]);
     setCashReceived("");
-    setDiscountValue("");
     setSubmitting(false);
     router.refresh();
   }
@@ -258,29 +248,6 @@ export default function KasirClient({
           <div className="flex justify-between text-sm text-neutral-300">
             <span>Subtotal</span>
             <span>{formatRupiah(subtotal)}</span>
-          </div>
-
-          <div>
-            <label className="text-xs font-medium text-neutral-500">Diskon</label>
-            <div className="flex gap-2">
-              <select
-                value={discountType}
-                onChange={(e) => setDiscountType(e.target.value as DiscountType)}
-                className="rounded-md border border-neutral-700 bg-neutral-800 px-2 py-1.5 text-xs text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
-              >
-                <option value="nominal">Rp</option>
-                <option value="percent">%</option>
-              </select>
-              <input
-                type="number"
-                min={0}
-                value={discountValue}
-                onChange={(e) => setDiscountValue(e.target.value)}
-                placeholder="0"
-                className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
-              />
-            </div>
-            {discount > 0 && <p className="mt-1 text-xs text-orange-400">Potongan: {formatRupiah(discount)}</p>}
           </div>
 
           <div className="flex justify-between text-base font-bold text-white">
