@@ -8,7 +8,9 @@ import type { Profile, UserRole } from "@/lib/types";
 const emptyForm = { fullName: "", email: "", password: "", role: "kasir" as UserRole };
 const emptyEditForm = { fullName: "", email: "", password: "", role: "kasir" as UserRole };
 
-export default function PenggunaClient({ profiles }: { profiles: Profile[] }) {
+type ProfileWithEmail = Profile & { email: string };
+
+export default function PenggunaClient({ profiles }: { profiles: ProfileWithEmail[] }) {
   const router = useRouter();
   const supabase = createClient();
   const [form, setForm] = useState(emptyForm);
@@ -25,10 +27,10 @@ export default function PenggunaClient({ profiles }: { profiles: Profile[] }) {
     router.refresh();
   }
 
-  function startEdit(profile: Profile) {
+  function startEdit(profile: ProfileWithEmail) {
     setEditingId(profile.id);
     setEditError(null);
-    setEditForm({ fullName: profile.full_name, email: "", password: "", role: profile.role });
+    setEditForm({ fullName: profile.full_name, email: profile.email, password: "", role: profile.role });
   }
 
   function cancelEdit() {
@@ -169,6 +171,7 @@ export default function PenggunaClient({ profiles }: { profiles: Profile[] }) {
         <thead className="bg-neutral-950 text-left text-neutral-500">
           <tr>
             <th className="px-3 py-2">Nama</th>
+            <th className="px-3 py-2">Email</th>
             <th className="px-3 py-2">Role</th>
             <th className="px-3 py-2"></th>
           </tr>
@@ -177,7 +180,7 @@ export default function PenggunaClient({ profiles }: { profiles: Profile[] }) {
           {profiles.map((profile) =>
             editingId === profile.id ? (
               <tr key={profile.id} className="border-t border-neutral-800">
-                <td colSpan={3} className="px-3 py-3">
+                <td colSpan={4} className="px-3 py-3">
                   <form
                     onSubmit={(e) => handleEditSubmit(e, profile.id)}
                     className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5"
@@ -195,10 +198,10 @@ export default function PenggunaClient({ profiles }: { profiles: Profile[] }) {
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-neutral-400">Email baru (opsional)</label>
+                      <label className="text-xs font-medium text-neutral-400">Email</label>
                       <input
+                        required
                         type="email"
-                        placeholder="Biarkan kosong jika tidak diubah"
                         value={editForm.email}
                         onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
                         className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
@@ -248,6 +251,7 @@ export default function PenggunaClient({ profiles }: { profiles: Profile[] }) {
             ) : (
               <tr key={profile.id} className="border-t border-neutral-800">
                 <td className="px-3 py-2 font-medium text-neutral-200">{profile.full_name}</td>
+                <td className="px-3 py-2 text-neutral-300">{profile.email}</td>
                 <td className="px-3 py-2">
                   <span
                     className={`rounded-full px-2 py-0.5 text-xs ${
@@ -282,7 +286,7 @@ export default function PenggunaClient({ profiles }: { profiles: Profile[] }) {
           )}
           {profiles.length === 0 && (
             <tr>
-              <td colSpan={3} className="px-3 py-4 text-center text-neutral-500">
+              <td colSpan={4} className="px-3 py-4 text-center text-neutral-500">
                 Belum ada pengguna.
               </td>
             </tr>
