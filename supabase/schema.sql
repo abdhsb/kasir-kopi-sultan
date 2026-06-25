@@ -33,7 +33,7 @@ create type payment_method as enum ('cash', 'qris', 'debit');
 
 create table transactions (
   id uuid primary key default gen_random_uuid(),
-  cashier_id uuid not null references profiles (id),
+  cashier_id uuid references profiles (id) on delete set null,
   subtotal numeric(12, 2) not null default 0 check (subtotal >= 0),
   discount numeric(12, 2) not null default 0 check (discount >= 0),
   total numeric(12, 2) not null check (total >= 0),
