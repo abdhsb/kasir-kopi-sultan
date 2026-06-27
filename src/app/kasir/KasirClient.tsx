@@ -89,10 +89,6 @@ export default function KasirClient({
 
   async function handleCheckout() {
     if (cart.length === 0) return;
-    if (paymentMethod === "qris" && !paymentProofUrl) {
-      setError("Unggah foto bukti pembayaran QRIS terlebih dahulu.");
-      return;
-    }
     setSubmitting(true);
     setError(null);
     setSuccessMsg(null);
@@ -316,7 +312,7 @@ export default function KasirClient({
 
           {paymentMethod === "qris" && (
             <div>
-              <label className="text-xs font-medium text-neutral-500">Foto bukti pembayaran</label>
+              <label className="text-xs font-medium text-neutral-500">Foto bukti pembayaran (opsional)</label>
               <input
                 type="file"
                 accept="image/*"
