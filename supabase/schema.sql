@@ -40,6 +40,7 @@ create table transactions (
   payment_method payment_method not null default 'cash',
   cash_received numeric(12, 2),
   payment_proof_url text,
+  notes text,
   status transaction_status not null default 'paid',
   created_at timestamptz not null default now()
 );

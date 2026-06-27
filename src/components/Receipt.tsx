@@ -18,6 +18,7 @@ export interface ReceiptData {
   paymentMethod: string;
   cashReceived: number | null;
   paymentProofUrl?: string | null;
+  notes?: string | null;
 }
 
 function formatRupiah(value: number) {
@@ -93,6 +94,12 @@ export default function Receipt({ data, onClose }: { data: ReceiptData; onClose?
             <p className="mb-1 text-xs text-neutral-400 print:text-black">Bukti pembayaran QRIS</p>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={data.paymentProofUrl} alt="Bukti pembayaran QRIS" className="mx-auto h-32 w-32 rounded-md object-cover" />
+          </div>
+        )}
+
+        {data.notes && (
+          <div className="mt-3 border-t border-dashed border-neutral-700 pt-3 print:border-black">
+            <p className="text-xs text-neutral-400 print:text-black">Catatan: {data.notes}</p>
           </div>
         )}
 

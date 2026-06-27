@@ -26,6 +26,7 @@ export default function KasirClient({
   const [cashReceived, setCashReceived] = useState<string>("");
   const [paymentProofUrl, setPaymentProofUrl] = useState<string>("");
   const [uploadingProof, setUploadingProof] = useState(false);
+  const [notes, setNotes] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -112,6 +113,7 @@ export default function KasirClient({
         payment_method: paymentMethod,
         cash_received: paymentMethod === "cash" ? Number(cashReceived || 0) : null,
         payment_proof_url: paymentMethod === "qris" ? paymentProofUrl : null,
+        notes: notes || null,
       })
       .select()
       .single();
@@ -162,11 +164,13 @@ export default function KasirClient({
       paymentMethod,
       cashReceived: paymentMethod === "cash" ? Number(cashReceived || 0) : null,
       paymentProofUrl: paymentMethod === "qris" ? paymentProofUrl : null,
+      notes: notes || null,
     });
     setSuccessMsg(`Transaksi berhasil. Total ${formatRupiah(total)}`);
     setCart([]);
     setCashReceived("");
     setPaymentProofUrl("");
+    setNotes("");
     setSubmitting(false);
     router.refresh();
   }
@@ -278,6 +282,17 @@ export default function KasirClient({
           <div className="flex justify-between text-base font-bold text-white">
             <span>Total</span>
             <span className="text-orange-400">{formatRupiah(total)}</span>
+          </div>
+
+          <div>
+            <label className="text-xs font-medium text-neutral-500">Catatan tambahan (opsional)</label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Contoh: less ice, tanpa gula, dibungkus"
+              rows={2}
+              className="w-full resize-none rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            />
           </div>
 
           <div className="flex gap-2">

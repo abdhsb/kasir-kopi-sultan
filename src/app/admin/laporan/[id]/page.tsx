@@ -44,6 +44,7 @@ export default async function LaporanDetailPage({ params }: { params: Promise<{ 
             paymentMethod: transaction.payment_method,
             cashReceived: transaction.cash_received != null ? Number(transaction.cash_received) : null,
             paymentProofUrl: transaction.payment_proof_url,
+            notes: transaction.notes,
           }}
         />
         <VoidTransactionButton
@@ -69,6 +70,13 @@ export default async function LaporanDetailPage({ params }: { params: Promise<{ 
               alt="Bukti pembayaran QRIS"
               className="mt-1 h-32 w-32 rounded-md object-cover"
             />
+          </div>
+        )}
+
+        {transaction.notes && (
+          <div className="mb-3">
+            <p className="text-sm text-neutral-400">Catatan</p>
+            <p className="text-neutral-200">{transaction.notes}</p>
           </div>
         )}
 
