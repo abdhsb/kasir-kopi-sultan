@@ -41,7 +41,7 @@ export default async function RiwayatPage({
     .filter((tx) => tx.status === "paid")
     .reduce((sum, tx) => sum + Number(tx.total), 0);
 
-  const periods: Period[] = ["harian", "semua"];
+  const periods: Period[] = ["harian"];
 
   return (
     <div className="space-y-4 p-4">
