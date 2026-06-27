@@ -47,11 +47,11 @@ export default function DeleteTransactionButton({
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-1 items-center gap-2">
       <button
         onClick={handleDelete}
         disabled={loading}
-        className="rounded-md border border-red-500/40 px-3 py-1.5 text-sm font-semibold text-red-400 hover:bg-red-500/10 disabled:opacity-50"
+        className="flex-1 rounded-lg border border-red-500/40 px-4 py-2.5 text-sm font-semibold text-red-400 hover:bg-red-500/10 disabled:opacity-50"
       >
         {loading ? "Menghapus..." : "Hapus"}
       </button>
