@@ -51,6 +51,14 @@ export interface TransactionItem {
   subtotal: number;
 }
 
+export interface Expense {
+  id: string;
+  cashier_id: string | null;
+  description: string;
+  amount: number;
+  created_at: string;
+}
+
 export interface CartItem {
   product: Product;
   quantity: number;

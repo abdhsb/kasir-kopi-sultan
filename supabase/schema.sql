@@ -45,6 +45,14 @@ create table transactions (
   created_at timestamptz not null default now()
 );
 
+create table expenses (
+  id uuid primary key default gen_random_uuid(),
+  cashier_id uuid references profiles (id) on delete set null,
+  description text not null,
+  amount numeric(12, 2) not null check (amount >= 0),
+  created_at timestamptz not null default now()
+);
+
 create table transaction_items (
   id uuid primary key default gen_random_uuid(),
   transaction_id uuid not null references transactions (id) on delete cascade,
@@ -73,6 +81,7 @@ alter table categories enable row level security;
 alter table products enable row level security;
 alter table transactions enable row level security;
 alter table transaction_items enable row level security;
+alter table expenses enable row level security;
 
 -- profiles: semua user login bisa baca profilnya sendiri & admin baca semua
 create policy "profiles_select_own_or_admin" on profiles
@@ -121,6 +130,14 @@ create policy "transaction_items_insert_via_transaction" on transaction_items
         and t.cashier_id = auth.uid()
     )
   );
+
+-- expenses: pengeluaran mendadak, kasir hanya kelola miliknya, admin kelola semua
+create policy "expenses_select_own_or_admin" on expenses
+  for select using (cashier_id = auth.uid() or is_admin (auth.uid()));
+create policy "expenses_insert_self" on expenses
+  for insert with check (cashier_id = auth.uid());
+create policy "expenses_delete_own_or_admin" on expenses
+  for delete using (cashier_id = auth.uid() or is_admin (auth.uid()));
 
 -- Saat user baru daftar lewat Supabase Auth, otomatis buat profile (default kasir)
 create function handle_new_user ()

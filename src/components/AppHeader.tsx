@@ -25,10 +25,12 @@ export default function AppHeader({
   const links = [
     { href: "/kasir", label: "Kasir" },
     { href: "/kasir/riwayat", label: "Riwayat" },
+    { href: "/kasir/pengeluaran", label: "Pengeluaran" },
     ...(role === "admin"
       ? [
           { href: "/admin/produk", label: "Produk" },
           { href: "/admin/laporan", label: "Laporan" },
+          { href: "/admin/pengeluaran", label: "Rekap Pengeluaran" },
           { href: "/admin/pengguna", label: "Pengguna" },
         ]
       : []),
