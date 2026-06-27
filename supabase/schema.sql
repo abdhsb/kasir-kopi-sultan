@@ -39,6 +39,7 @@ create table transactions (
   total numeric(12, 2) not null check (total >= 0),
   payment_method payment_method not null default 'cash',
   cash_received numeric(12, 2),
+  payment_proof_url text,
   status transaction_status not null default 'paid',
   created_at timestamptz not null default now()
 );
@@ -151,3 +152,13 @@ create policy "products_images_admin_update" on storage.objects
   for update using (bucket_id = 'products' and is_admin (auth.uid()));
 create policy "products_images_admin_delete" on storage.objects
   for delete using (bucket_id = 'products' and is_admin (auth.uid()));
+
+-- Storage bucket untuk bukti pembayaran QRIS
+insert into storage.buckets (id, name, public)
+values ('payment-proofs', 'payment-proofs', true)
+on conflict (id) do nothing;
+
+create policy "payment_proofs_read_authenticated" on storage.objects
+  for select using (bucket_id = 'payment-proofs' and auth.uid() is not null);
+create policy "payment_proofs_insert_authenticated" on storage.objects
+  for insert with check (bucket_id = 'payment-proofs' and auth.uid() is not null);

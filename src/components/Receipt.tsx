@@ -17,6 +17,7 @@ export interface ReceiptData {
   total: number;
   paymentMethod: string;
   cashReceived: number | null;
+  paymentProofUrl?: string | null;
 }
 
 function formatRupiah(value: number) {
@@ -86,6 +87,14 @@ export default function Receipt({ data, onClose }: { data: ReceiptData; onClose?
             </>
           )}
         </div>
+
+        {data.paymentProofUrl && (
+          <div className="mt-3 border-t border-dashed border-neutral-700 pt-3 print:border-black">
+            <p className="mb-1 text-xs text-neutral-400 print:text-black">Bukti pembayaran QRIS</p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={data.paymentProofUrl} alt="Bukti pembayaran QRIS" className="mx-auto h-32 w-32 rounded-md object-cover" />
+          </div>
+        )}
 
         <p className="mt-4 text-center text-xs text-neutral-500 print:text-black">Terima kasih telah berbelanja</p>
 

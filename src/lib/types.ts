@@ -35,6 +35,7 @@ export interface Transaction {
   total: number;
   payment_method: PaymentMethod;
   cash_received: number | null;
+  payment_proof_url: string | null;
   status: TransactionStatus;
   created_at: string;
 }

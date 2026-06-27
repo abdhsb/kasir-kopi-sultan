@@ -43,12 +43,25 @@ export default async function RiwayatDetailPage({ params }: { params: Promise<{ 
           total: Number(transaction.total),
           paymentMethod: transaction.payment_method,
           cashReceived: transaction.cash_received != null ? Number(transaction.cash_received) : null,
+          paymentProofUrl: transaction.payment_proof_url,
         }}
       />
 
       <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-4 shadow-sm">
         <p className="text-sm text-neutral-400">Waktu</p>
         <p className="mb-3 text-neutral-200">{formatDate(transaction.created_at)}</p>
+
+        {transaction.payment_proof_url && (
+          <div className="mb-3">
+            <p className="text-sm text-neutral-400">Bukti pembayaran QRIS</p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={transaction.payment_proof_url}
+              alt="Bukti pembayaran QRIS"
+              className="mt-1 h-32 w-32 rounded-md object-cover"
+            />
+          </div>
+        )}
 
         <div className="overflow-x-auto rounded-lg border border-neutral-800">
           <table className="w-full text-sm">

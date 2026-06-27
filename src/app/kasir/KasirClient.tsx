@@ -24,6 +24,8 @@ export default function KasirClient({
   const [cart, setCart] = useState<CartItem[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [cashReceived, setCashReceived] = useState<string>("");
+  const [paymentProofUrl, setPaymentProofUrl] = useState<string>("");
+  const [uploadingProof, setUploadingProof] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -65,8 +67,32 @@ export default function KasirClient({
     );
   }
 
+  async function handleProofUpload(file: File) {
+    setUploadingProof(true);
+    setError(null);
+
+    const ext = file.name.split(".").pop();
+    const path = `${crypto.randomUUID()}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage.from("payment-proofs").upload(path, file);
+
+    if (uploadError) {
+      setError(uploadError.message);
+      setUploadingProof(false);
+      return;
+    }
+
+    const { data } = supabase.storage.from("payment-proofs").getPublicUrl(path);
+    setPaymentProofUrl(data.publicUrl);
+    setUploadingProof(false);
+  }
+
   async function handleCheckout() {
     if (cart.length === 0) return;
+    if (paymentMethod === "qris" && !paymentProofUrl) {
+      setError("Unggah foto bukti pembayaran QRIS terlebih dahulu.");
+      return;
+    }
     setSubmitting(true);
     setError(null);
     setSuccessMsg(null);
@@ -89,6 +115,7 @@ export default function KasirClient({
         total,
         payment_method: paymentMethod,
         cash_received: paymentMethod === "cash" ? Number(cashReceived || 0) : null,
+        payment_proof_url: paymentMethod === "qris" ? paymentProofUrl : null,
       })
       .select()
       .single();
@@ -138,10 +165,12 @@ export default function KasirClient({
       total,
       paymentMethod,
       cashReceived: paymentMethod === "cash" ? Number(cashReceived || 0) : null,
+      paymentProofUrl: paymentMethod === "qris" ? paymentProofUrl : null,
     });
     setSuccessMsg(`Transaksi berhasil. Total ${formatRupiah(total)}`);
     setCart([]);
     setCashReceived("");
+    setPaymentProofUrl("");
     setSubmitting(false);
     router.refresh();
   }
@@ -285,12 +314,32 @@ export default function KasirClient({
             </div>
           )}
 
+          {paymentMethod === "qris" && (
+            <div>
+              <label className="text-xs font-medium text-neutral-500">Foto bukti pembayaran</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleProofUpload(file);
+                }}
+                className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-xs text-neutral-300 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+              />
+              {uploadingProof && <p className="mt-1 text-xs text-neutral-500">Mengunggah...</p>}
+              {paymentProofUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={paymentProofUrl} alt="Bukti pembayaran" className="mt-2 h-20 w-20 rounded-md object-cover" />
+              )}
+            </div>
+          )}
+
           {error && <p className="rounded bg-red-500/10 px-2 py-1 text-xs text-red-400">{error}</p>}
           {successMsg && <p className="rounded bg-green-500/10 px-2 py-1 text-xs text-green-400">{successMsg}</p>}
 
           <button
             onClick={handleCheckout}
-            disabled={submitting || cart.length === 0}
+            disabled={submitting || uploadingProof || cart.length === 0}
             className="w-full rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-black transition hover:bg-orange-400 disabled:opacity-50"
           >
             {submitting ? "Memproses..." : "Bayar"}
