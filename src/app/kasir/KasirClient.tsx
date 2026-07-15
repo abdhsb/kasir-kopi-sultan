@@ -46,7 +46,8 @@ export default function KasirClient({
 
   const total = subtotal;
 
-  const change = paymentMethod === "cash" ? Math.max(0, Number(cashReceived || 0) - total) : 0;
+  const cashRaw = Number(cashReceived.replace(/\./g, "") || 0);
+  const change = paymentMethod === "cash" ? Math.max(0, cashRaw - total) : 0;
 
   function addToCart(product: Product) {
     setCart((prev) => {
@@ -111,7 +112,7 @@ export default function KasirClient({
         discount,
         total,
         payment_method: paymentMethod,
-        cash_received: paymentMethod === "cash" ? Number(cashReceived || 0) : null,
+        cash_received: paymentMethod === "cash" ? cashRaw : null,
         payment_proof_url: paymentMethod === "qris" ? paymentProofUrl : null,
         notes: notes || null,
       })
@@ -162,7 +163,7 @@ export default function KasirClient({
       discount,
       total,
       paymentMethod,
-      cashReceived: paymentMethod === "cash" ? Number(cashReceived || 0) : null,
+      cashReceived: paymentMethod === "cash" ? cashRaw : null,
       paymentProofUrl: paymentMethod === "qris" ? paymentProofUrl : null,
       notes: notes || null,
     });
@@ -315,10 +316,14 @@ export default function KasirClient({
             <div>
               <label className="text-xs font-medium text-neutral-500">Uang diterima</label>
               <input
-                type="number"
-                min={0}
+                type="text"
+                inputMode="numeric"
                 value={cashReceived}
-                onChange={(e) => setCashReceived(e.target.value)}
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/\./g, "").replace(/\D/g, "");
+                  setCashReceived(raw ? Number(raw).toLocaleString("id-ID") : "");
+                }}
+                placeholder="0"
                 className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
               />
               <p className="mt-1 text-xs text-neutral-500">Kembalian: {formatRupiah(change)}</p>
