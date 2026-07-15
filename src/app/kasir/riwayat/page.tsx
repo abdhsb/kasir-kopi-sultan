@@ -74,6 +74,7 @@ export default async function RiwayatPage({
               <th className="px-3 py-2">Metode</th>
               <th className="px-3 py-2">Total</th>
               <th className="px-3 py-2">Status</th>
+              <th className="px-3 py-2">Catatan</th>
               <th className="px-3 py-2"></th>
               <th className="px-3 py-2"></th>
             </tr>
@@ -93,6 +94,9 @@ export default async function RiwayatPage({
                     {tx.status}
                   </span>
                 </td>
+                <td className="px-3 py-2 text-neutral-400 italic">
+                  {tx.notes ?? "-"}
+                </td>
                 <td className="px-3 py-2 text-right">
                   <Link href={`/kasir/riwayat/${tx.id}`} className="text-orange-400 hover:underline">
                     Detail
@@ -105,7 +109,7 @@ export default async function RiwayatPage({
             ))}
             {(transactions ?? []).length === 0 && (
               <tr>
-                <td colSpan={6} className="px-3 py-4 text-center text-neutral-500">
+                <td colSpan={7} className="px-3 py-4 text-center text-neutral-500">
                   Belum ada transaksi.
                 </td>
               </tr>
