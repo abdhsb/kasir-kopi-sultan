@@ -321,7 +321,7 @@ export default function KasirClient({
                 value={cashReceived}
                 onChange={(e) => {
                   const raw = e.target.value.replace(/\./g, "").replace(/\D/g, "");
-                  setCashReceived(raw ? Number(raw).toLocaleString("id-ID") : "");
+                  setCashReceived(raw ? raw.replace(/\B(?=(\d{3})+(?!\d))/g, ".") : "");
                 }}
                 placeholder="0"
                 className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
