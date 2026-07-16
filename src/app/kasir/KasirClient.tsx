@@ -174,6 +174,7 @@ export default function KasirClient({
     setNotes("");
     setSubmitting(false);
     router.refresh();
+    setTimeout(() => setSuccessMsg(null), 3000);
   }
 
   return (
@@ -351,15 +352,21 @@ export default function KasirClient({
           )}
 
           {error && <p className="rounded bg-red-500/10 px-2 py-1 text-xs text-red-400">{error}</p>}
-          {successMsg && <p className="rounded bg-green-500/10 px-2 py-1 text-xs text-green-400">{successMsg}</p>}
 
-          <button
-            onClick={handleCheckout}
-            disabled={submitting || uploadingProof || cart.length === 0}
-            className="w-full rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-black transition hover:bg-orange-400 disabled:opacity-50"
-          >
-            {submitting ? "Memproses..." : "Bayar"}
-          </button>
+          {successMsg ? (
+            <div className="flex flex-col items-center gap-2 rounded-lg bg-green-500/10 py-4">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500 text-2xl font-bold text-white">✓</span>
+              <p className="text-sm font-semibold text-green-400">{successMsg}</p>
+            </div>
+          ) : (
+            <button
+              onClick={handleCheckout}
+              disabled={submitting || uploadingProof || cart.length === 0}
+              className="w-full rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-black transition hover:bg-orange-400 disabled:opacity-50"
+            >
+              {submitting ? "Memproses..." : "Bayar"}
+            </button>
+          )}
         </div>
       </div>
 
