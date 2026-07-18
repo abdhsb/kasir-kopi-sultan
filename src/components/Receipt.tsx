@@ -94,6 +94,7 @@ function buildReceiptHtml(data: ReceiptData): string {
   ${data.notes ? `<div class="divider"><p>Catatan: ${data.notes}</p></div>` : ""}
 
   <p class="center" style="margin-top:6pt;">- Terima kasih telah berbelanja -</p>
+  <script>window.onload = function(){ window.print(); }</script>
 </body>
 </html>`;
 }
@@ -103,19 +104,10 @@ export default function Receipt({ data, onClose }: { data: ReceiptData; onClose?
 
   function handlePrint() {
     const html = buildReceiptHtml(data);
-    const iframe = document.createElement("iframe");
-    iframe.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;";
-    document.body.appendChild(iframe);
-    const win = iframe.contentWindow;
-    if (!win) return;
-    win.document.open();
-    win.document.write(html);
-    win.document.close();
-    setTimeout(() => {
-      win.focus();
-      win.print();
-      setTimeout(() => document.body.removeChild(iframe), 1000);
-    }, 300);
+    const blob = new Blob([html], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
   }
 
   return (
