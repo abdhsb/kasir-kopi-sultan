@@ -103,18 +103,14 @@ export default function Receipt({ data, onClose }: { data: ReceiptData; onClose?
 
   function handlePrint() {
     const html = buildReceiptHtml(data);
-    const iframe = document.createElement("iframe");
-    iframe.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;";
-    document.body.appendChild(iframe);
-    const win = iframe.contentWindow;
+    const win = window.open("", "_blank", "width=300,height=600");
     if (!win) return;
-    win.document.open();
     win.document.write(html);
     win.document.close();
+    win.focus();
     setTimeout(() => {
-      win.focus();
       win.print();
-      setTimeout(() => document.body.removeChild(iframe), 1000);
+      win.close();
     }, 300);
   }
 
