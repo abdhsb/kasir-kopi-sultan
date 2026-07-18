@@ -37,10 +37,6 @@ export default async function RiwayatPage({
 
   const { data: transactions } = await query;
 
-  const totalPeriode = (transactions ?? [])
-    .filter((tx) => tx.status === "paid")
-    .reduce((sum, tx) => sum + Number(tx.total), 0);
-
   const periods: Period[] = ["harian"];
 
   return (
@@ -59,11 +55,6 @@ export default async function RiwayatPage({
             {PERIOD_LABELS[p]}
           </Link>
         ))}
-      </div>
-
-      <div className="rounded-lg border border-orange-500/20 bg-neutral-900 p-4 shadow-sm">
-        <p className="text-sm text-neutral-400">Total penjualan saya - {PERIOD_LABELS[period]}</p>
-        <p className="text-2xl font-bold text-orange-400">{formatRupiah(totalPeriode)}</p>
       </div>
 
       <div className="overflow-x-auto rounded-lg border border-neutral-800 bg-neutral-900 shadow-sm">
