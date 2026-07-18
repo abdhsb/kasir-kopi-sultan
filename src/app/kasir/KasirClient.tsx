@@ -10,6 +10,35 @@ function formatRupiah(value: number) {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
 }
 
+function ProductCard({ product, cartItem, onAdd }: { product: Product; cartItem: CartItem | undefined; onAdd: (p: Product) => void }) {
+  return (
+    <button
+      onClick={() => onAdd(product)}
+      disabled={product.stock <= 0}
+      className={`relative flex flex-col items-start rounded-lg border p-3 text-left shadow-sm transition disabled:opacity-40 ${
+        cartItem
+          ? "border-orange-500 bg-orange-500/10 shadow-orange-900/30 ring-1 ring-orange-500"
+          : "border-neutral-800 bg-neutral-900 hover:border-orange-500/50 hover:shadow-orange-900/20"
+      }`}
+    >
+      {cartItem && (
+        <span className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-orange-500 text-xs font-bold text-black">
+          {cartItem.quantity}
+        </span>
+      )}
+      {product.image_url ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={product.image_url} alt={product.name} className="mb-2 h-20 w-full rounded-md object-cover" />
+      ) : (
+        <span className="mb-2 flex h-20 w-full items-center justify-center rounded-md bg-neutral-800 text-2xl">☕</span>
+      )}
+      <span className="font-semibold text-white">{product.name}</span>
+      <span className="text-sm text-orange-400">{formatRupiah(product.price)}</span>
+      <span className="mt-1 text-xs text-neutral-500">Stok: {product.stock}</span>
+    </button>
+  );
+}
+
 export default function KasirClient({
   products,
   categories,
@@ -206,43 +235,54 @@ export default function KasirClient({
           ))}
         </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
-          {filteredProducts.map((product) => {
-            const cartItem = cart.find((item) => item.product.id === product.id);
-            return (
-              <button
-                key={product.id}
-                onClick={() => addToCart(product)}
-                disabled={product.stock <= 0}
-                className={`relative flex flex-col items-start rounded-lg border p-3 text-left shadow-sm transition disabled:opacity-40 ${
-                  cartItem
-                    ? "border-orange-500 bg-orange-500/10 shadow-orange-900/30 ring-1 ring-orange-500"
-                    : "border-neutral-800 bg-neutral-900 hover:border-orange-500/50 hover:shadow-orange-900/20"
-                }`}
-              >
-                {cartItem && (
-                  <span className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-orange-500 text-xs font-bold text-black">
-                    {cartItem.quantity}
-                  </span>
-                )}
-                {product.image_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={product.image_url} alt={product.name} className="mb-2 h-20 w-full rounded-md object-cover" />
-                ) : (
-                  <span className="mb-2 flex h-20 w-full items-center justify-center rounded-md bg-neutral-800 text-2xl">
-                    ☕
-                  </span>
-                )}
-                <span className="font-semibold text-white">{product.name}</span>
-                <span className="text-sm text-orange-400">{formatRupiah(product.price)}</span>
-                <span className="mt-1 text-xs text-neutral-500">Stok: {product.stock}</span>
-              </button>
-            );
-          })}
-          {filteredProducts.length === 0 && (
-            <p className="col-span-full text-sm text-neutral-500">Belum ada produk.</p>
-          )}
-        </div>
+        {activeCategory === "all" ? (
+          <div className="space-y-6">
+            {categories.length === 0 ? (
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+                {filteredProducts.map((product) => <ProductCard key={product.id} product={product} cartItem={cart.find((i) => i.product.id === product.id)} onAdd={addToCart} />)}
+                {filteredProducts.length === 0 && <p className="col-span-full text-sm text-neutral-500">Belum ada produk.</p>}
+              </div>
+            ) : (
+              categories.map((cat) => {
+                const catProducts = products.filter((p) => p.category_id === cat.id);
+                if (catProducts.length === 0) return null;
+                return (
+                  <div key={cat.id}>
+                    <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-orange-400">
+                      <span className="h-px flex-1 bg-orange-500/20"></span>
+                      {cat.name}
+                      <span className="h-px flex-1 bg-orange-500/20"></span>
+                    </h3>
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+                      {catProducts.map((product) => <ProductCard key={product.id} product={product} cartItem={cart.find((i) => i.product.id === product.id)} onAdd={addToCart} />)}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+            {(() => {
+              const uncategorized = products.filter((p) => !p.category_id);
+              if (uncategorized.length === 0) return null;
+              return (
+                <div>
+                  <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-neutral-500">
+                    <span className="h-px flex-1 bg-neutral-700"></span>
+                    Lainnya
+                    <span className="h-px flex-1 bg-neutral-700"></span>
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+                    {uncategorized.map((product) => <ProductCard key={product.id} product={product} cartItem={cart.find((i) => i.product.id === product.id)} onAdd={addToCart} />)}
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+            {filteredProducts.map((product) => <ProductCard key={product.id} product={product} cartItem={cart.find((i) => i.product.id === product.id)} onAdd={addToCart} />)}
+            {filteredProducts.length === 0 && <p className="col-span-full text-sm text-neutral-500">Belum ada produk.</p>}
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col rounded-lg border border-neutral-800 bg-neutral-900 p-4 shadow-sm">
